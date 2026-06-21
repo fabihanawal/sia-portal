@@ -1,0 +1,804 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>শিবগঞ্জ ইসলামিক একাডেমি | শিবগঞ্জ, নওগাঁ</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts (SolaimanLipi or Hind Siliguri style via Inter & Noto Sans Bengali) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Supabase JS Client -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        body {
+            font-family: 'Hind Siliguri', 'Inter', sans-serif;
+            background-color: #f8fafc;
+        }
+        .custom-gradient {
+            background: linear-gradient(135deg, #0f5132 0%, #198754 100%);
+        }
+        .admin-gradient {
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+        }
+    </style>
+</head>
+<body class="text-slate-800 antialiased">
+
+    <!-- Top Bar -->
+    <div class="bg-emerald-900 text-white text-xs sm:text-sm py-2 px-4 shadow-sm">
+        <div class="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-2">
+            <div class="flex items-center gap-4">
+                <span><i class="fas fa-phone mr-1"></i> +৮৮০ ১৭XXXXXXXX</span>
+                <span><i class="fas fa-envelope mr-1"></i> info@sia.edu.bd</span>
+            </div>
+            <div class="flex items-center gap-4">
+                <span class="bg-emerald-800 px-2 py-0.5 rounded text-[11px] font-bold animate-pulse">মাউশি নির্দেশনা ২০২৬</span>
+                <button onclick="toggleAdminModal(true)" class="hover:text-emerald-300 font-semibold transition cursor-pointer">
+                    <i class="fas fa-user-shield mr-1"></i> এডমিন প্যানেল
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Header -->
+    <header class="bg-white border-b border-slate-200 sticky top-0 z-40 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 py-4 flex flex-col md:flex-row justify-between items-center gap-4">
+            <!-- Brand -->
+            <div class="flex items-center gap-4">
+                <div class="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center border-2 border-emerald-600 shadow-md">
+                    <i class="fas fa-mosque text-3xl text-emerald-700"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl sm:text-2xl font-bold text-emerald-900 leading-tight">শিবগঞ্জ ইসলামিক একাডেমি</h1>
+                    <p class="text-xs sm:text-sm text-slate-500 font-medium">স্থাপিত: ২০০৫ | শিবগঞ্জ, নওগাঁ | ইআইআইএন (EIIN): XXXXXX</p>
+                </div>
+            </div>
+            <!-- Government Badge Reference -->
+            <div class="flex items-center gap-3 bg-slate-50 border border-slate-200 p-2 rounded-xl">
+                <div class="w-10 h-10 bg-red-100 text-red-700 rounded-full flex items-center justify-center text-lg font-bold">
+                    <i class="fas fa-landmark"></i>
+                </div>
+                <div class="text-right">
+                    <p class="text-xs font-bold text-slate-700">মাধ্যমিক ও উচ্চশিক্ষা অধিদপ্তর</p>
+                    <p class="text-[10px] text-emerald-700 font-semibold">সরকারি নির্দেশনা মোতাবেক তৈরি পোর্টাল</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation Menu -->
+        <nav class="bg-emerald-800 text-white border-t border-emerald-700">
+            <div class="max-w-7xl mx-auto px-4 flex flex-wrap items-center justify-between">
+                <div class="flex flex-wrap text-sm font-medium">
+                    <button onclick="switchTab('home')" class="nav-btn px-4 py-3 bg-emerald-950 text-white font-bold border-b-2 border-amber-400 flex items-center gap-2"><i class="fas fa-home"></i> হোম</button>
+                    <button onclick="switchTab('about')" class="nav-btn px-4 py-3 hover:bg-emerald-700 text-slate-100 flex items-center gap-2"><i class="fas fa-info-circle"></i> আমাদের সম্পর্কে</button>
+                    <button onclick="switchTab('curriculum')" class="nav-btn px-4 py-3 hover:bg-emerald-700 text-slate-100 flex items-center gap-2"><i class="fas fa-book-open"></i> শিক্ষা কার্যক্রম</button>
+                    <button onclick="switchTab('notices')" class="nav-btn px-4 py-3 hover:bg-emerald-700 text-slate-100 flex items-center gap-2"><i class="fas fa-bullhorn"></i> নোটিস বোর্ড</button>
+                    <button onclick="switchTab('teachers')" class="nav-btn px-4 py-3 hover:bg-emerald-700 text-slate-100 flex items-center gap-2"><i class="fas fa-users"></i> শিক্ষক ও কর্মচারী</button>
+                    <button onclick="switchTab('results')" class="nav-btn px-4 py-3 hover:bg-emerald-700 text-slate-100 flex items-center gap-2"><i class="fas fa-poll-h"></i> ফলাফল ও শিক্ষার্থী তথ্য</button>
+                    <button onclick="switchTab('contact')" class="nav-btn px-4 py-3 hover:bg-emerald-700 text-slate-100 flex items-center gap-2"><i class="fas fa-address-book"></i> যোগাযোগ</button>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Notice Ticker -->
+    <div class="bg-amber-50 border-b border-amber-200 py-2 px-4 flex items-center">
+        <div class="max-w-7xl mx-auto w-full flex items-center gap-3">
+            <span class="bg-amber-600 text-white text-xs font-bold px-3 py-1 rounded shadow-sm whitespace-nowrap flex items-center gap-1">
+                <i class="fas fa-bolt"></i> সর্বশেষ নোটিশ:
+            </span>
+            <div class="overflow-hidden relative w-full text-sm text-slate-700 font-medium">
+                <marquee behavior="scroll" direction="left" scrollamount="5" id="notice-ticker">
+                    শিবগঞ্জ ইসলামিক একাডেমির ২০২৬ শিক্ষাবর্ষের অর্ধবার্ষিক পরীক্ষার সময়সূচী প্রকাশিত হয়েছে। বিস্তারিত নোটিশ বোর্ডে দেখুন।
+                </marquee>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Dynamic Content Wrapper -->
+    <main class="max-w-7xl mx-auto px-4 py-8">
+        
+        <!-- PAGE 1: HOME TAB -->
+        <div id="tab-home" class="tab-content block">
+            <!-- Hero Grid -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <!-- Left & Middle: Slideshow Banner and Core Features -->
+                <div class="lg:col-span-2 space-y-8">
+                    <!-- Virtual Campus Banner -->
+                    <div class="relative rounded-2xl overflow-hidden shadow-lg border border-slate-200 bg-emerald-950 text-white p-8 sm:p-12 min-h-[320px] flex flex-col justify-end">
+                        <div class="absolute inset-0 bg-cover bg-center opacity-30" style="background-image: url('https://images.unsplash.com/photo-1541339907198-e08756dedf3f?auto=format&fit=crop&w=1200&q=80');"></div>
+                        <div class="absolute inset-0 bg-gradient-to-t from-emerald-950 via-emerald-900/60 to-transparent"></div>
+                        <div class="relative z-10 space-y-3">
+                            <span class="bg-amber-500 text-slate-900 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">স্মার্ট ক্যাম্পাস ২০২৬</span>
+                            <h2 class="text-2xl sm:text-4xl font-extrabold tracking-tight">ডিজিটাল ও নৈতিক শিক্ষার এক অনন্য সমন্বয়</h2>
+                            <p class="text-sm sm:text-base text-emerald-100 max-w-xl">মাধ্যমিক ও উচ্চশিক্ষা অধিদপ্তর (DSHE) এর সর্বশেষ নির্দেশনা মোতাবেক আমাদের প্রাতিষ্ঠানিক ওয়েব পোর্টালটি সম্পূর্ণ স্বয়ংক্রিয় ও ডাইনামিক করা হয়েছে।</p>
+                        </div>
+                    </div>
+
+                    <!-- Directives Features (As listed in the Image requirements) -->
+                    <div>
+                        <h3 class="text-lg font-bold text-slate-900 mb-4 flex items-center gap-2">
+                            <span class="w-2 h-6 bg-emerald-600 rounded"></span> সরকারি গাইডলাইন অনুযায়ী গুরুত্বপূর্ণ মডিউলসমূহ
+                        </h3>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div onclick="switchTab('about')" class="p-5 bg-white border border-slate-200 rounded-xl shadow-xs hover:shadow-md transition cursor-pointer flex gap-4 items-start">
+                                <div class="w-12 h-12 rounded-lg bg-emerald-50 text-emerald-700 flex items-center justify-center text-xl shrink-0"><i class="fas fa-university"></i></div>
+                                <div>
+                                    <h4 class="font-bold text-slate-800 text-base">প্রতিষ্ঠানের সকল তথ্য</h4>
+                                    <p class="text-xs text-slate-500 mt-1">ইতিহাস, ইআইআইএন নম্বর, লক্ষ্য এবং গভর্নিং বডির তথ্যাদি।</p>
+                                </div>
+                            </div>
+                            <div onclick="switchTab('notices')" class="p-5 bg-white border border-slate-200 rounded-xl shadow-xs hover:shadow-md transition cursor-pointer flex gap-4 items-start">
+                                <div class="w-12 h-12 rounded-lg bg-amber-50 text-amber-700 flex items-center justify-center text-xl shrink-0"><i class="fas fa-bullhorn"></i></div>
+                                <div>
+                                    <h4 class="font-bold text-slate-800 text-base">নোটিশ ও ঘোষণা</h4>
+                                    <p class="text-xs text-slate-500 mt-1">সব ধরণের অফিসিয়াল জরুরি নোটিশ ও রুটিন রিয়েল-টাইম আপডেট।</p>
+                                </div>
+                            </div>
+                            <div onclick="switchTab('teachers')" class="p-5 bg-white border border-slate-200 rounded-xl shadow-xs hover:shadow-md transition cursor-pointer flex gap-4 items-start">
+                                <div class="w-12 h-12 rounded-lg bg-blue-50 text-blue-700 flex items-center justify-center text-xl shrink-0"><i class="fas fa-user-tie"></i></div>
+                                <div>
+                                    <h4 class="font-bold text-slate-800 text-base">শিক্ষক ও কর্মচারীদের তথ্য</h4>
+                                    <p class="text-xs text-slate-500 mt-1">ডিজিটাল ডিরেক্টরি, পদবি ও ইমেইল যোগাযোগের তালিকা।</p>
+                                </div>
+                            </div>
+                            <div onclick="switchTab('results')" class="p-5 bg-white border border-slate-200 rounded-xl shadow-xs hover:shadow-md transition cursor-pointer flex gap-4 items-start">
+                                <div class="w-12 h-12 rounded-lg bg-purple-50 text-purple-700 flex items-center justify-center text-xl shrink-0"><i class="fas fa-graduation-cap"></i></div>
+                                <div>
+                                    <h4 class="font-bold text-slate-800 text-base">শিক্ষার্থীদের তথ্য ও ফলাফল</h4>
+                                    <p class="text-xs text-slate-500 mt-1">অনলাইন ক্লাস রুটিন, শিক্ষার্থীর সংখ্যা ও ডিজিটাল রেজাল্ট শিট।</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Side: Notice Sidebar & Head of Institution Message -->
+                <div class="space-y-8">
+                    <!-- Principal Speech Card -->
+                    <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
+                        <h3 class="text-base font-bold text-slate-900 border-b border-slate-100 pb-3 mb-4 flex items-center gap-2">
+                            <i class="fas fa-user-circle text-emerald-600"></i> প্রধান শিক্ষকের বাণী
+                        </h3>
+                        <div class="text-center space-y-3">
+                            <div class="w-24 h-24 bg-slate-100 border border-slate-200 rounded-full mx-auto overflow-hidden flex items-center justify-center text-slate-400">
+                                <i class="fas fa-user-tie text-4xl"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-slate-800 text-sm">মোহাম্মদ আশিবুজ্জামান রিফাত</h4>
+                                <p class="text-[11px] text-slate-500">প্রধান শিক্ষক ও প্রধান নির্বাহী কর্মকর্তা</p>
+                            </div>
+                            <p class="text-xs text-slate-600 text-justify leading-relaxed italic bg-slate-50 p-3 rounded-lg">
+                                "ডিজিটাল বাংলাদেশ থেকে স্মার্ট বাংলাদেশ বিনির্মাণের এই যাত্রায় আমাদের প্রতিষ্ঠানের সকল তথ্য ও সেবা জনগণের দোরগোড়ায় পৌঁছে দিতে মাউশির নির্দেশনা মোতাবেক এই ডাইনামিক পোর্টালটি চালু করা হয়েছে..."
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Quick Notice Widget -->
+                    <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
+                        <div class="flex justify-between items-center border-b border-slate-100 pb-3 mb-4">
+                            <h3 class="text-base font-bold text-slate-900 flex items-center gap-2">
+                                <i class="fas fa-bell text-amber-500"></i> সাম্প্রতিক নোটিশ
+                            </h3>
+                            <button onclick="switchTab('notices')" class="text-xs text-emerald-600 font-bold hover:underline">সবগুলো দেখুন</button>
+                        </div>
+                        <div class="space-y-3" id="home-notice-list">
+                            <!-- Injected Dynamically -->
+                            <div class="p-3 bg-slate-50 hover:bg-slate-100 rounded-lg transition border-l-4 border-emerald-600">
+                                <p class="text-[11px] text-slate-400 font-bold"><i class="far fa-calendar-alt mr-1"></i> ২০ মে, ২০২৬</p>
+                                <h4 class="text-xs font-bold text-slate-800 mt-0.5">অর্ধবার্ষিক পরীক্ষার সিলেবাস ও ফি সংক্রান্ত নোটিশ</h4>
+                            </div>
+                            <div class="p-3 bg-slate-50 hover:bg-slate-100 rounded-lg transition border-l-4 border-slate-400">
+                                <p class="text-[11px] text-slate-400 font-bold"><i class="far fa-calendar-alt mr-1"></i> ১৮ মে, ২০২৬</p>
+                                <h4 class="text-xs font-bold text-slate-800 mt-0.5">বাংলাদেশ সরকারের স্মার্ট সিটিজেনশিপ সেমিনারে অংশগ্রহণ</h4>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- PAGE 2: ABOUT TAB -->
+        <div id="tab-about" class="tab-content hidden space-y-6">
+            <div class="bg-white border border-slate-200 rounded-2xl p-8 shadow-sm">
+                <h2 class="text-xl font-bold text-emerald-900 mb-4 border-b pb-2"><i class="fas fa-university mr-2"></i> প্রতিষ্ঠানের পরিচিতি ও ইতিহাস</h2>
+                <div class="prose max-w-none text-slate-600 text-sm leading-relaxed space-y-4">
+                    <p>শিবগঞ্জ ইসলামিক একাডেমি নওগাঁ জেলার একটি ঐতিহ্যবাহী ও স্বনামধন্য শিক্ষাপ্রতিষ্ঠান। ২০০৫ সালে প্রতিষ্ঠার পর থেকে অত্র এলাকার শিক্ষার্থীদের মাঝে নৈতিক ও আধুনিক সাধারণ শিক্ষার আলো ছড়িয়ে দিতে প্রতিষ্ঠানটি অগ্রণী ভূমিকা পালন করে আসছে।</p>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 my-6">
+                        <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 text-center">
+                            <p class="text-2xl font-bold text-emerald-700">৩৫০+</p>
+                            <p class="text-xs font-semibold text-slate-500 mt-1">বর্তমান শিক্ষার্থী</p>
+                        </div>
+                        <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 text-center">
+                            <p class="text-2xl font-bold text-emerald-700">১৫+</p>
+                            <p class="text-xs font-semibold text-slate-500 mt-1">অভিজ্ঞ শিক্ষক মণ্ডলী</p>
+                        </div>
+                        <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 text-center">
+                            <p class="text-2xl font-bold text-emerald-700">১০০%</p>
+                            <p class="text-xs font-semibold text-slate-500 mt-1">পাসের হার</p>
+                        </div>
+                    </div>
+                    <h3 class="font-bold text-slate-800 text-base mt-4">আমাদের ভিশন ও মিশন</h3>
+                    <p>জ্ঞান, শৃঙ্খলা ও নৈতিকতা—এই মূলমন্ত্রকে ধারণ করে প্রতিটি শিক্ষার্থীকে সুনাগরিক এবং আন্তর্জাতিক মানের যোগ্যতাসম্পন্ন দেশপ্রেমিক হিসেবে গড়ে তোলাই আমাদের লক্ষ্য।</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- PAGE 3: CURRICULUM TAB -->
+        <div id="tab-curriculum" class="tab-content hidden space-y-6">
+            <div class="bg-white border border-slate-200 rounded-2xl p-8 shadow-sm">
+                <h2 class="text-xl font-bold text-emerald-900 mb-4 border-b pb-2"><i class="fas fa-book-open mr-2"></i> শিক্ষা কার্যক্রম ও সুযোগ-সুবিধা</h2>
+                <p class="text-sm text-slate-600 mb-4">জাতীয় শিক্ষাক্রম ও পাঠ্যপুস্তক বোর্ড (NCTB) কর্তৃক অনুমোদিত সর্বাধুনিক স্মার্ট কারিকুলাম অনুযায়ী আমাদের পাঠদান পরিচালনা করা হয়।</p>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
+                    <div class="p-5 border border-slate-100 bg-emerald-50/50 rounded-xl">
+                        <h3 class="font-bold text-emerald-900 mb-2"><i class="fas fa-check-circle mr-1 text-emerald-600"></i> একাডেমিক শাখাসমূহ:</h3>
+                        <ul class="list-disc pl-5 text-sm text-slate-700 space-y-1">
+                            <li>ষষ্ঠ থেকে অষ্টম শ্রেণী (নিম্ন মাধ্যমিক)</li>
+                            <li>নবম-দশম শ্রেণী (বিজ্ঞান ও মানবিক বিভাগ)</li>
+                            <li>ইসলামিক নৈতিকতা ও মূল্যবোধ শিক্ষা বিশেষ কোর্স</li>
+                        </ul>
+                    </div>
+                    <div class="p-5 border border-slate-100 bg-slate-50 rounded-xl">
+                        <h3 class="font-bold text-slate-800 mb-2"><i class="fas fa-star mr-1 text-amber-500"></i> বিশেষ বৈচিত্র্য:</h3>
+                        <ul class="list-disc pl-5 text-sm text-slate-700 space-y-1">
+                            <li>মাল্টিমিডিয়া ক্লাসরুম ও কম্পিউটার ল্যাব সুবিধা</li>
+                            <li>নিয়মিত আইসিটি ও ফ্রিল্যান্সিং বুনিয়াদি পরিচিতি ক্লাস</li>
+                            <li>ত্রৈমাসিক বিজ্ঞান মেলা ও কুইজ প্রতিযোগিতা</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- PAGE 4: NOTICES TAB -->
+        <div id="tab-notices" class="tab-content hidden space-y-6">
+            <div class="bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 shadow-sm">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b pb-4 mb-6">
+                    <div>
+                        <h2 class="text-xl font-bold text-emerald-900"><i class="fas fa-bullhorn mr-2"></i> প্রাতিষ্ঠানিক নোটিশ বোর্ড</h2>
+                        <p class="text-xs text-slate-500 mt-1">সকল আপডেট ও অফিসিয়াল সার্কুলার এখানে সংরক্ষিত থাকে।</p>
+                    </div>
+                    <div class="text-xs bg-slate-100 border p-2 rounded-lg text-slate-600">
+                        <i class="fas fa-sync-alt mr-1 text-emerald-600"></i> Supabase ডাটাবেজ দ্বারা চালিত
+                    </div>
+                </div>
+                <!-- Notice List Container -->
+                <div class="space-y-4" id="main-notice-board">
+                    <!-- Loaded dynamically -->
+                </div>
+            </div>
+        </div>
+
+        <!-- PAGE 5: TEACHERS TAB -->
+        <div id="tab-teachers" class="tab-content hidden space-y-6">
+            <div class="bg-white border border-slate-200 rounded-2xl p-8 shadow-sm">
+                <h2 class="text-xl font-bold text-emerald-900 mb-6 border-b pb-2"><i class="fas fa-users mr-2"></i> শিক্ষক ও কর্মচারী ডিরেক্টরি</h2>
+                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6" id="teachers-grid">
+                    <!-- Injected Dynamically -->
+                </div>
+            </div>
+        </div>
+
+        <!-- PAGE 6: RESULTS & STUDENTS TAB -->
+        <div id="tab-results" class="tab-content hidden space-y-6">
+            <div class="bg-white border border-slate-200 rounded-2xl p-8 shadow-sm">
+                <h2 class="text-xl font-bold text-emerald-900 mb-4 border-b pb-2"><i class="fas fa-graduation-cap mr-2"></i> ফলাফল অনুসন্ধান ও পরিসংখ্যান</h2>
+                <p class="text-sm text-slate-600 mb-6">পরীক্ষার নাম ও রোল নম্বর ইনপুট করে সহজেই যেকোনো টার্মের ফলাফল সংগ্রহ করুন।</p>
+                
+                <div class="max-w-xl bg-slate-50 border border-slate-200 p-6 rounded-xl space-y-4">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 uppercase mb-1">পরীক্ষার ধরণ নির্বাচন করুন</label>
+                        <select class="w-full bg-white border border-slate-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-emerald-500 outline-none">
+                            <option>অর্ধবার্ষিক মূল্যায়ন পরীক্ষা ২০২৬</option>
+                            <option>বার্ষিক সমাপনী পরীক্ষা</option>
+                            <option>প্রাক-নির্বাচনী পরীক্ষা</option>
+                        </select>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 uppercase mb-1">শ্রেণী</label>
+                            <select class="w-full bg-white border border-slate-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-emerald-500 outline-none">
+                                <option>৬ষ্ঠ শ্রেণী</option>
+                                <option>৭ম শ্রেণী</option>
+                                <option>৮ম শ্রেণী</option>
+                                <option>৯ম শ্রেণী</option>
+                                <option>১০ম শ্রেণী</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 uppercase mb-1">রোল নম্বর</label>
+                            <input type="text" placeholder="যেমন: ১০০৫" class="w-full bg-white border border-slate-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-emerald-500 outline-none">
+                        </div>
+                    </div>
+                    <button onclick="alert('ফলাফল মডিউলটি ডেমো ডাটাবেজে যুক্ত। সুপাবেজ লাইভ টেবিলে রোল কোড ম্যাপিং করুন।')" class="w-full bg-emerald-700 hover:bg-emerald-800 text-white font-bold py-2.5 rounded-lg text-sm transition shadow-sm cursor-pointer">
+                        <i class="fas fa-search mr-1"></i> ফলাফল দেখুন
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- PAGE 7: CONTACT TAB -->
+        <div id="tab-contact" class="tab-content hidden space-y-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <!-- Contact Info -->
+                <div class="bg-white border border-slate-200 rounded-2xl p-8 shadow-sm space-y-6">
+                    <h2 class="text-xl font-bold text-emerald-900 border-b pb-2"><i class="fas fa-address-book mr-2"></i> যোগাযোগের ঠিকানা</h2>
+                    <div class="space-y-4 text-sm text-slate-700">
+                        <div class="flex gap-3 items-start">
+                            <div class="w-8 h-8 rounded-full bg-emerald-50 text-emerald-700 flex items-center justify-center shrink-0"><i class="fas fa-map-marker-alt"></i></div>
+                            <div>
+                                <h4 class="font-bold">ক্যাম্পাস লোকেশন:</h4>
+                                <p class="text-slate-500 text-xs mt-0.5">শিবগঞ্জ বাজার সংলগ্ন, শিবগঞ্জ, নওগাঁ জেলা, রাজশাহী বিভাগ, বাংলাদেশ।</p>
+                            </div>
+                        </div>
+                        <div class="flex gap-3 items-start">
+                            <div class="w-8 h-8 rounded-full bg-emerald-50 text-emerald-700 flex items-center justify-center shrink-0"><i class="fas fa-phone-alt"></i></div>
+                            <div>
+                                <h4 class="font-bold">মোবাইল ও হেল্পলাইন:</h4>
+                                <p class="text-slate-500 text-xs mt-0.5">+৮৮০ ১৭XXXXXXXX, +৮৮০ ১৮XXXXXXXX</p>
+                            </div>
+                        </div>
+                        <div class="flex gap-3 items-start">
+                            <div class="w-8 h-8 rounded-full bg-emerald-50 text-emerald-700 flex items-center justify-center shrink-0"><i class="fas fa-envelope"></i></div>
+                            <div>
+                                <h4 class="font-bold">ইমেইল:</h4>
+                                <p class="text-slate-500 text-xs mt-0.5">info@sia.edu.bd, principal@sia.edu.bd</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Message Form -->
+                <div class="bg-white border border-slate-200 rounded-2xl p-8 shadow-sm">
+                    <h2 class="text-xl font-bold text-slate-900 border-b pb-2 mb-4"><i class="fas fa-paper-plane mr-2"></i> সরাসরি বার্তা পাঠান</h2>
+                    <form onsubmit="event.preventDefault(); alert('আপনার বার্তাটি সফলভাবে পাঠানো হয়েছে!');" class="space-y-4">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-600 mb-1">আপনার নাম</label>
+                            <input type="text" required class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-emerald-500 outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-600 mb-1">মোবাইল নম্বর</label>
+                            <input type="tel" required class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-emerald-500 outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-600 mb-1">বার্তার বিষয়</label>
+                            <textarea rows="3" required class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-emerald-500 outline-none"></textarea>
+                        </div>
+                        <button type="submit" class="bg-emerald-800 hover:bg-emerald-900 text-white font-bold px-6 py-2 rounded-lg text-sm transition shadow-sm cursor-pointer">বার্তা পাঠান</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="bg-slate-900 text-slate-400 text-xs sm:text-sm mt-16 border-t-4 border-emerald-700">
+        <div class="max-w-7xl mx-auto px-4 py-12 grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div class="space-y-3">
+                <div class="flex items-center gap-2 text-white font-bold text-lg">
+                    <i class="fas fa-mosque text-emerald-500"></i> শিবগঞ্জ ইসলামিক একাডেমি
+                </div>
+                <p class="text-xs text-slate-500 leading-relaxed">মাউশি এবং বাংলাদেশ সরকারের শিক্ষা বোর্ডের সর্বশেষ নীতিমালা অনুযায়ী তৈরিকৃত শতভাগ ডাইনামিক এবং নিরাপদ শিক্ষা ম্যানেজমেন্ট পোর্টাল।</p>
+            </div>
+            <div>
+                <h4 class="text-white font-bold text-sm mb-3">গুরুত্বপূর্ণ লিঙ্ক</h4>
+                <ul class="space-y-1.5 text-xs">
+                    <li><a href="https://www.dhakaeducationboard.gov.bd/" target="_blank" class="hover:text-emerald-400 transition">মাধ্যমিক ও উচ্চমাধ্যমিক শিক্ষা বোর্ড</a></li>
+                    <li><a href="http://www.dshe.gov.bd/" target="_blank" class="hover:text-emerald-400 transition">মাধ্যমিক ও উচ্চশিক্ষা অধিদপ্তর (DSHE)</a></li>
+                    <li><a href="http://www.moedu.gov.bd/" target="_blank" class="hover:text-emerald-400 transition">শিক্ষা মন্ত্রণালয়</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4 class="text-white font-bold text-sm mb-3">প্যানেল এক্সেস</h4>
+                <p class="text-xs text-slate-500 mb-2">শুধুমাত্র অনুমোদিত আইটি অ্যাডমিনদের ব্যবহারের জন্য।</p>
+                <button onclick="toggleAdminModal(true)" class="bg-emerald-800 text-white font-semibold px-3 py-1.5 rounded hover:bg-emerald-700 transition text-xs cursor-pointer">
+                    <i class="fas fa-lock mr-1"></i> এডমিন সাইন-ইন
+                </button>
+            </div>
+        </div>
+        <div class="border-t border-slate-800 text-center py-4 bg-slate-950 text-slate-600 text-[11px]">
+            স্বত্ব © ২০২৬ শিবগঞ্জ ইসলামিক একাডেমি। সর্বস্বত্ব সংরক্ষিত। | কারিগরি সহায়তায়: <span class="text-slate-400">Ashibuzzaman Rifat (CEO)</span>
+        </div>
+    </footer>
+
+    <!-- ==================== MODAL: ADMIN LOGIN / BACKEND MANAGEMENT PANEL ==================== -->
+    <div id="admin-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-xs z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto shadow-2xl border border-slate-200 flex flex-col md:flex-row">
+            
+            <!-- Left Side Panel Info -->
+            <div class="admin-gradient p-8 text-slate-300 md:w-80 flex flex-col justify-between shrink-0">
+                <div class="space-y-4">
+                    <div class="flex items-center gap-2 text-white font-bold text-lg">
+                        <i class="fas fa-shield-alt text-amber-500"></i> সিবিএমএস কন্ট্রোল
+                    </div>
+                    <p class="text-xs text-slate-400 leading-relaxed">সুপাবেজ (Supabase) ব্যাকএন্ড কন্ট্রোল রুম। এখান থেকে নোটিশ এবং শিক্ষক তালিকা সরাসরি পরিবর্তন করা সম্ভব।</p>
+                </div>
+                
+                <!-- Database Status Indicator -->
+                <div class="mt-8 bg-slate-800/60 p-4 rounded-xl border border-slate-700 space-y-2">
+                    <p class="text-[10px] uppercase tracking-wider font-bold text-slate-500">ডাটাবেজ কানেকশন স্ট্যাটাস</p>
+                    <div class="flex items-center gap-2 text-xs text-amber-400 font-bold" id="db-status-badge">
+                        <span class="w-2 class w-2 h-2 rounded-full bg-amber-400 animate-ping"></span> লোকাল মক মোড সক্রিয়
+                    </div>
+                </div>
+
+                <div class="text-[10px] text-slate-500 mt-4">
+                    রিয়েলটাইম ক্লাউড স্টোরেজ আর্কিটেকচার v2.0
+                </div>
+            </div>
+
+            <!-- Right Side Panel Control Dynamic Form Area -->
+            <div class="p-6 sm:p-8 flex-1 bg-slate-5/40">
+                <!-- Header with Close Btn -->
+                <div class="flex justify-between items-center border-b pb-3 mb-6">
+                    <h3 class="text-lg font-bold text-slate-900" id="admin-panel-title">সিকিউর এডমিন অথেন্টিকেশন</h3>
+                    <button onclick="toggleAdminModal(false)" class="w-8 h-8 rounded-full hover:bg-slate-200 text-slate-500 transition cursor-pointer flex items-center justify-center"><i class="fas fa-times"></i></button>
+                </div>
+
+                <!-- STATE 1: LOGIN FORM -->
+                <form id="admin-login-form" onsubmit="handleAdminLogin(event)" class="space-y-4 block">
+                    <div class="bg-emerald-50 border border-emerald-100 p-3 rounded-lg text-xs text-emerald-800 mb-2">
+                        <i class="fas fa-info-circle mr-1"></i> সিস্টেম ডিফল্ট ক্রেডেনশিয়াল ব্যবহার করুন (ইউজার: admin, পাসওয়ার্ড: admin123)
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 uppercase mb-1">অ্যাডমিন ইউজারনেম</label>
+                        <div class="relative">
+                            <i class="fas fa-user absolute left-3 top-3 text-slate-400 text-xs"></i>
+                            <input type="text" id="admin-username" required class="w-full bg-white border border-slate-300 rounded-lg p-2.5 pl-9 text-sm focus:ring-2 focus:ring-emerald-500 outline-none">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 uppercase mb-1">সিক্রেট পাসওয়ার্ড</label>
+                        <div class="relative">
+                            <i class="fas fa-lock absolute left-3 top-3 text-slate-400 text-xs"></i>
+                            <input type="password" id="admin-password" required class="w-full bg-white border border-slate-300 rounded-lg p-2.5 pl-9 text-sm focus:ring-2 focus:ring-emerald-500 outline-none">
+                        </div>
+                    </div>
+                    <button type="submit" class="w-full bg-emerald-800 hover:bg-emerald-900 text-white font-bold py-2.5 rounded-lg text-sm transition shadow-sm cursor-pointer">
+                        লগইন করুন <i class="fas fa-sign-in-alt ml-1"></i>
+                    </button>
+                </form>
+
+                <!-- STATE 2: AUTHENTICATED DASHBOARD (HIDDEN DEFAULT) -->
+                <div id="admin-dashboard-area" class="hidden space-y-6">
+                    <!-- Config Box for Supabase keys -->
+                    <div class="bg-slate-100 border border-slate-200 p-4 rounded-xl">
+                        <details class="group">
+                            <summary class="list-none flex justify-between items-center font-bold text-xs text-slate-700 cursor-pointer select-none">
+                                <span class="flex items-center gap-1.5 text-emerald-800"><i class="fas fa-key"></i> সুপাবেজ (Supabase) ক্রেডেনশিয়াল কনফিগারেশন</span>
+                                <i class="fas fa-chevron-down group-open:rotate-180 transition-transform"></i>
+                            </summary>
+                            <div class="mt-3 pt-3 border-t border-slate-200 space-y-3">
+                                <div>
+                                    <label class="block text-[11px] font-bold text-slate-600 mb-1">SUPABASE_URL</label>
+                                    <input type="text" id="supa-url" placeholder="https://your-project.supabase.co" class="w-full bg-white border border-slate-300 rounded-md p-1.5 text-xs outline-none focus:border-emerald-600">
+                                </div>
+                                <div>
+                                    <label class="block text-[11px] font-bold text-slate-600 mb-1">SUPABASE_ANON_KEY</label>
+                                    <input type="password" id="supa-key" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..." class="w-full bg-white border border-slate-300 rounded-md p-1.5 text-xs outline-none focus:border-emerald-600">
+                                </div>
+                                <button onclick="initializeSupabaseClient()" class="bg-slate-800 text-white px-3 py-1 rounded text-xs font-bold hover:bg-slate-900 cursor-pointer">কানেক্ট করুন</button>
+                            </div>
+                        </details>
+                    </div>
+
+                    <!-- Tabs Inside Admin Manager -->
+                    <div class="flex border-b border-slate-200 text-xs font-bold">
+                        <button onclick="switchAdminSubTab('notice-mgr')" id="subbtn-notice-mgr" class="px-4 py-2 bg-white border-t border-x rounded-t-lg border-slate-200 text-emerald-800">নোটিশ ব্যবস্থাপনা</button>
+                        <button onclick="switchAdminSubTab('teacher-mgr')" id="subbtn-teacher-mgr" class="px-4 py-2 hover:bg-slate-50 text-slate-600">শিক্ষক ডিরেক্টরি ব্যবস্থাপনা</button>
+                    </div>
+
+                    <!-- Sub Tab 1: Notice Manager Form -->
+                    <div id="subtab-notice-mgr" class="admin-subtab block space-y-4">
+                        <h4 class="text-xs font-bold text-slate-500 uppercase tracking-wider">নতুন নোটিশ যোগ করুন</h4>
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                            <div class="sm:col-span-2">
+                                <label class="block text-[11px] font-bold text-slate-600 mb-1">নোটিশের শিরোনাম</label>
+                                <input type="text" id="new-notice-title" placeholder="যেমন: অর্ধবার্ষিক পরীক্ষার সময়সূচী" class="w-full bg-white border border-slate-300 rounded-lg p-2 text-xs outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-[11px] font-bold text-slate-600 mb-1">তারিখ</label>
+                                <input type="text" id="new-notice-date" placeholder="২১ জুন, ২০২৬" class="w-full bg-white border border-slate-300 rounded-lg p-2 text-xs outline-none">
+                            </div>
+                        </div>
+                        <button onclick="addNoticeItem()" class="bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold px-4 py-2 rounded-lg transition cursor-pointer">
+                            <i class="fas fa-plus mr-1"></i> পাবলিশ করুন
+                        </button>
+                    </div>
+
+                    <!-- Sub Tab 2: Teacher Manager Form -->
+                    <div id="subtab-teacher-mgr" class="admin-subtab hidden space-y-4">
+                        <h4 class="text-xs font-bold text-slate-500 uppercase tracking-wider">নতুন শিক্ষক/কর্মচারী যুক্ত করুন</h4>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-[11px] font-bold text-slate-600 mb-1">নাম</label>
+                                <input type="text" id="new-teacher-name" placeholder="যেমন: আবদুর রহমান" class="w-full bg-white border border-slate-300 rounded-lg p-2 text-xs outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-[11px] font-bold text-slate-600 mb-1">পদবি</label>
+                                <input type="text" id="new-teacher-role" placeholder="যেমন: সহকারী শিক্ষক (গণিত)" class="w-full bg-white border border-slate-300 rounded-lg p-2 text-xs outline-none">
+                            </div>
+                        </div>
+                        <button onclick="addTeacherItem()" class="bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold px-4 py-2 rounded-lg transition cursor-pointer">
+                            <i class="fas fa-user-plus mr-1"></i> যুক্ত করুন
+                        </button>
+                    </div>
+
+                    <!-- Logout Button -->
+                    <div class="pt-4 border-t flex justify-end">
+                        <button onclick="handleAdminLogout()" class="bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold px-4 py-2 rounded-lg transition cursor-pointer">
+                            <i class="fas fa-sign-out-alt mr-1"></i> লগআউট প্যানেল
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== CORE JAVA SCRIPT APP ARCHITECTURE ==================== -->
+    <script>
+        // Default Mock State Data to provide full functionality out of the box (As standard workflow in user summary)
+        let appState = {
+            notices: [
+                { id: 1, title: "২০২৬ শিক্ষাবর্ষের অর্ধবার্ষিক পরীক্ষার সময়সূচী ও সিলেবাস সংক্রান্ত নোটিশ।", date: "২০ মে, ২০২৬" },
+                { id: 2, title: "শিক্ষা মন্ত্রণালয়ের নির্দেশনা অনুযায়ী নতুন কারিকুলাম ভিত্তিক শিক্ষক মূল্যায়ন সেমিনার।", date: "১৮ মে, ২০২৬" },
+                { id: 3, title: "শিবগঞ্জ ইসলামিক একাডেমির বার্ষিক ক্রীড়া প্রতিযোগিতা ও পুরষ্কার বিতরণী অনুষ্ঠান।", date: "১৬ মে, ২০২৬" }
+            ],
+            teachers: [
+                { id: 1, name: "মোহাম্মদ আশিবুজ্জামান রিফাত", role: "প্রধান শিক্ষক ও সিইও" },
+                { id: 2, name: "মাওলানা মোহাম্মদ ইউসুফ", role: "সহকারী প্রধান শিক্ষক (ইসলামিক স্টাডিজ)" },
+                { id: 3, name: "জনাব আশরাফুল ইসলাম", role: "সিনিয়র লেকচারার (ইংরেজি)" },
+                { id: 4, name: "মোসাম্মৎ ফাতেমা খাতুন", role: "সহকারী শিক্ষিকা (বিজ্ঞান)" }
+            ]
+        };
+
+        let supabaseClient = null;
+
+        // Initialize Application Content
+        document.addEventListener("DOMContentLoaded", () => {
+            renderNotices();
+            renderTeachers();
+            
+            // Try auto-loading from local storage if user saved Supabase credentials
+            if(localStorage.getItem('sia_supa_url') && localStorage.getItem('sia_supa_key')) {
+                document.getElementById('supa-url').value = localStorage.getItem('sia_supa_url');
+                document.getElementById('supa-key').value = localStorage.getItem('sia_supa_key');
+                initializeSupabaseClient();
+            }
+        });
+
+        // Tab Switching Engine (Public Interface)
+        function switchTab(tabId) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('block'));
+            
+            // Show current tab
+            const activeTab = document.getElementById('tab-' + tabId);
+            if(activeTab) {
+                activeTab.classList.remove('hidden');
+                activeTab.classList.add('block');
+            }
+
+            // Style nav buttons
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('bg-emerald-950', 'border-b-2', 'border-amber-400', 'font-bold');
+                btn.classList.add('hover:bg-emerald-700');
+            });
+            
+            // Highlight current button
+            event.currentTarget.classList.add('bg-emerald-950', 'border-b-2', 'border-amber-400', 'font-bold');
+            event.currentTarget.classList.remove('hover:bg-emerald-700');
+            
+            // Scroll to top smoothly
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Admin Sub Tab Control Switcher
+        function switchAdminSubTab(subTabId) {
+            document.querySelectorAll('.admin-subtab').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.admin-subtab').forEach(el => el.classList.remove('block'));
+            
+            document.getElementById('subtab-' + subTabId).classList.remove('hidden');
+            document.getElementById('subtab-' + subTabId).classList.add('block');
+            
+            // Reset button active styles
+            ['notice-mgr', 'teacher-mgr'].forEach(id => {
+                const btn = document.getElementById('subbtn-' + id);
+                if(btn) {
+                    btn.className = "px-4 py-2 hover:bg-slate-50 text-slate-600";
+                }
+            });
+            // Apply current style
+            document.getElementById('subbtn-' + subTabId).className = "px-4 py-2 bg-white border-t border-x rounded-t-lg border-slate-200 text-emerald-800";
+        }
+
+        // Render Notice Engines
+        function renderNotices() {
+            // 1. Render Ticker
+            if(appState.notices.length > 0) {
+                document.getElementById('notice-ticker').innerText = appState.notices[0].title;
+            }
+            
+            // 2. Render Home Sidebar List
+            const homeList = document.getElementById('home-notice-list');
+            homeList.innerHTML = appState.notices.slice(0, 3).map((n, index) => `
+                <div class="p-3 bg-slate-50 hover:bg-slate-100 rounded-lg transition border-l-4 ${index === 0 ? 'border-emerald-600' : 'border-slate-400'}">
+                    <p class="text-[11px] text-slate-400 font-bold"><i class="far fa-calendar-alt mr-1"></i> ${n.date}</p>
+                    <h4 class="text-xs font-bold text-slate-800 mt-0.5">${n.title}</h4>
+                </div>
+            `).join('');
+
+            // 3. Render Main Notice Page Board
+            const mainBoard = document.getElementById('main-notice-board');
+            mainBoard.innerHTML = appState.notices.map(n => `
+                <div class="p-4 sm:p-5 bg-slate-50 border border-slate-200 rounded-xl hover:border-emerald-300 transition flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                    <div class="space-y-1">
+                        <div class="text-xs font-bold text-emerald-700 flex items-center gap-1">
+                            <i class="far fa-calendar-alt"></i> ${n.date}
+                        </div>
+                        <h3 class="text-sm sm:text-base font-bold text-slate-800">${n.title}</h3>
+                    </div>
+                    <button onclick="alert('পিডিএফ ডাউনলোড লিংক ইন্টিগ্রেট করুন')" class="text-xs bg-white hover:bg-emerald-50 text-emerald-800 font-bold px-3 py-2 border border-slate-200 rounded-lg shadow-2xs whitespace-nowrap flex items-center gap-1 cursor-pointer">
+                        <i class="fas fa-file-pdf text-rose-600"></i> ডাউনলোড করুন
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        // Render Teachers Engine
+        function renderTeachers() {
+            const container = document.getElementById('teachers-grid');
+            container.innerHTML = appState.teachers.map(t => `
+                <div class="p-5 bg-slate-50 border border-slate-150 rounded-xl text-center space-y-3 hover:shadow-xs transition">
+                    <div class="w-16 h-16 bg-emerald-100/60 text-emerald-800 rounded-full mx-auto flex items-center justify-center text-xl font-bold">
+                        <i class="fas fa-user-tie"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-slate-800 text-sm sm:text-base">${t.name}</h3>
+                        <p class="text-xs text-slate-500 font-medium mt-0.5">${t.role}</p>
+                    </div>
+                    <div class="pt-2 border-t border-slate-200/60 text-[11px] text-slate-400 flex justify-center gap-3">
+                        <span><i class="fas fa-envelope"></i> যোগাযোগ</span>
+                        <span><i class="fas fa-id-card"></i> প্রোফাইল</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Modal Views Toggle Controls
+        function toggleAdminModal(show) {
+            const modal = document.getElementById('admin-modal');
+            if(show) {
+                modal.classList.remove('hidden');
+            } else {
+                modal.classList.add('hidden');
+            }
+        }
+
+        // Handle Admin Credentials Login Auth
+        function handleAdminLogin(e) {
+            e.preventDefault();
+            const user = document.getElementById('admin-username').value;
+            const pass = document.getElementById('admin-password').value;
+
+            if(user === 'admin' && pass === 'admin123') {
+                // Success State View Transition
+                document.getElementById('admin-login-form').classList.replace('block', 'hidden');
+                document.getElementById('admin-dashboard-area').classList.replace('hidden', 'block');
+                document.getElementById('admin-panel-title').innerText = "অ্যাডমিন ড্যাশবোর্ড কন্ট্রোল প্যানেল";
+            } else {
+                alert('ভুল ইউজারনেম অথবা পাসওয়ার্ড! আবার চেষ্টা করুন।');
+            }
+        }
+
+        // Handle Logout
+        function handleAdminLogout() {
+            document.getElementById('admin-username').value = '';
+            document.getElementById('admin-password').value = '';
+            document.getElementById('admin-dashboard-area').classList.replace('block', 'hidden');
+            document.getElementById('admin-login-form').classList.replace('hidden', 'block');
+            document.getElementById('admin-panel-title').innerText = "সিকিউর এডমিন অথেন্টিকেশন";
+        }
+
+        // Supabase Real-time Cloud Client Connector Setup
+        function initializeSupabaseClient() {
+            const url = document.getElementById('supa-url').value;
+            const key = document.getElementById('supa-key').value;
+
+            if(!url || !key) {
+                alert('দয়া করে সঠিক Supabase URL এবং Anon Key প্রদান করুন।');
+                return;
+            }
+
+            try {
+                supabaseClient = supabase.createClient(url, key);
+                
+                // Store inside cache
+                localStorage.setItem('sia_supa_url', url);
+                localStorage.setItem('sia_supa_key', key);
+
+                // Update UI Badges
+                const badge = document.getElementById('db-status-badge');
+                badge.className = "flex items-center gap-2 text-xs text-emerald-400 font-bold";
+                badge.innerHTML = `<span class="w-2 h-2 rounded-full bg-emerald-400"></span> সুপাবেজ ক্লাউড লাইভ সংযুক্ত`;
+                
+                // Fetch dynamic data from cloud tables
+                syncDataFromSupabase();
+            } catch(err) {
+                alert('Supabase কানেকশনে সমস্যা হয়েছে: ' + err.message);
+            }
+        }
+
+        // Add New Notice Form Item
+        async function addNoticeItem() {
+            const title = document.getElementById('new-notice-title').value;
+            const date = document.getElementById('new-notice-date').value || "২১ জুন, ২০২৬";
+
+            if(!title) { alert('নোটিশের শিরোনাম ফাঁকা রাখা যাবে না!'); return; }
+
+            const newItem = { id: Date.now(), title: title, date: date };
+
+            if(supabaseClient) {
+                // Live Table Push
+                const { error } = await supabaseClient.from('notices').insert([newItem]);
+                if(error) { alert('সুপাবেজে ডেটা আপলোডে ত্রুটি: ' + error.message); return; }
+            }
+
+            // Fallback updates local dynamic view
+            appState.notices.unshift(newItem);
+            renderNotices();
+            document.getElementById('new-notice-title').value = '';
+            alert('নতুন নোটিশটি সফলভাবে পোর্টাল ও ডাটাবেজে যুক্ত হয়েছে!');
+        }
+
+        // Add New Teacher Form Item
+        async function addTeacherItem() {
+            const name = document.getElementById('new-teacher-name').value;
+            const role = document.getElementById('new-teacher-role').value;
+
+            if(!name || !role) { alert('নাম ও পদবি উভয়ই আবশ্যক!'); return; }
+
+            const newItem = { id: Date.now(), name: name, role: role };
+
+            if(supabaseClient) {
+                const { error } = await supabaseClient.from('teachers').insert([newItem]);
+                if(error) { alert('সুপাবেজে শিক্ষক যুক্ত করতে ত্রুটি: ' + error.message); return; }
+            }
+
+            appState.teachers.push(newItem);
+            renderTeachers();
+            document.getElementById('new-teacher-name').value = '';
+            document.getElementById('new-teacher-role').value = '';
+            alert('নতুন শিক্ষক সফলভাবে ডিরেক্টরিতে যুক্ত হয়েছেন!');
+        }
+
+        // Cloud Synchronization Engine
+        async function syncDataFromSupabase() {
+            if(!supabaseClient) return;
+            
+            // 1. Fetch Notices
+            let { data: noticesData, error: nErr } = await supabaseClient.from('notices').select('*').order('id', { ascending: false });
+            if(!nErr && noticesData && noticesData.length > 0) {
+                appState.notices = noticesData;
+            }
+
+            // 2. Fetch Teachers
+            let { data: teachersData, error: tErr } = await supabaseClient.from('teachers').select('*');
+            if(!tErr && teachersData && teachersData.length > 0) {
+                appState.teachers = teachersData;
+            }
+
+            renderNotices();
+            renderTeachers();
+        }
+    </script>
+</body>
+</html>
